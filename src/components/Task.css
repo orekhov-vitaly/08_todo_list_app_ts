@@ -17,9 +17,19 @@
 
 .task-title {
     position: relative;
+    cursor: pointer;
 }
 
 .task-completed .task-title {
     text-decoration: line-through;
     color: rgba(33, 37, 41, .4);
+}
+
+.actions {
+    opacity: 0;
+    transition: all .3s;
+}
+
+.task-item:hover .actions {
+    opacity: 1;
 }

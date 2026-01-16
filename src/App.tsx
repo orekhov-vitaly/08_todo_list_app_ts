@@ -30,28 +30,26 @@ function App() {
         };
     }, []);
 
+    const addTask = (newTask: ITask) => setTasks((prev) => [newTask, ...prev]);
+    const editTask = (newTask: ITask) => {
+        setTasks(
+            tasks.map((task) => (newTask.id === task.id ? newTask : task))
+        );
+    };
+    const deleteTask = (removeTask: ITask) => {
+        const index = tasks.findIndex((e) => e.id == removeTask.id);
+        const tasksCopy = [...tasks];
+        tasksCopy.splice(index, 1);
+        setTasks(tasksCopy);
+    };
+
     return (
         <div className="container-fluid">
-            <NewTask
-                addTask={(newTask: ITask) =>
-                    setTasks((prev) => [newTask, ...prev])
-                }
-            />
+            <NewTask addTask={addTask} />
             <TaskList
                 tasks={tasks}
-                editTask={(newTask: ITask) =>
-                    setTasks(
-                        tasks.map((task) =>
-                            newTask.id === task.id ? newTask : task
-                        )
-                    )
-                }
-                deleteTask={(removeTask: ITask) => {
-                    const index = tasks.findIndex((e) => e.id == removeTask.id);
-                    const tasksCopy = [...tasks];
-                    tasksCopy.splice(index, 1);
-                    setTasks(tasksCopy);
-                }}
+                editTask={editTask}
+                deleteTask={deleteTask}
             />
         </div>
     );
