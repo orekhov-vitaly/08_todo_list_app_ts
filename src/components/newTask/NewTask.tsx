@@ -1,5 +1,5 @@
 import { useRef, type FC } from "react";
-import type { ITask } from "../App";
+import type { ITask } from "../../App";
 import { v4 } from "uuid";
 import "./NewTask.css";
 

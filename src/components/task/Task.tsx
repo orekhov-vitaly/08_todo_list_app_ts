@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-import type { ITask } from "../App";
+import type { ITask } from "../../App";
 import "./Task.css";
 
 const Task: FC<{

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import NewTask from "./components/NewTask";
-import TaskList from "./components/TaskList";
+import NewTask from "./components/newTask/NewTask";
+import TaskList from "./components/taskList/TaskList";
 
 export interface ITask {
     userId: number;
@@ -11,11 +11,14 @@ export interface ITask {
 }
 
 function App() {
-    const [tasks, setTasks] = useState<ITask[]>([]);
+    const TASKS_STORAGE_KEY = "todos_app_tasks";
+    const [tasks, setTasks] = useState<ITask[]>(
+        () => JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!) || []
+    );
     const [error, setError] = useState("");
 
     useEffect(() => {
-        return () => {
+        if (!localStorage.getItem(TASKS_STORAGE_KEY)) {
             fetch("https://jsonplaceholder.typicode.com/todos")
                 .then((res) => {
                     if (!res.ok) {
@@ -24,11 +27,17 @@ function App() {
                     return res.json();
                 })
                 .then((tasks) => {
-                    setTasks(tasks || []);
+                    setTasks(tasks.slice(0, 10) || []);
                 })
                 .catch((error) => setError(error));
-        };
+        } else {
+            setTasks(JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!));
+        }
     }, []);
+
+    useEffect(() => {
+        localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+    }, [tasks]);
 
     const addTask = (newTask: ITask) => setTasks((prev) => [newTask, ...prev]);
     const editTask = (newTask: ITask) => {
@@ -42,6 +51,19 @@ function App() {
         tasksCopy.splice(index, 1);
         setTasks(tasksCopy);
     };
+    const filterTaskList = (isFilter: boolean) => {
+        const newTaskList: ITask[] = [];
+        tasks.map((e) => {
+            isFilter
+                ? e.completed === false
+                    ? newTaskList.unshift(e)
+                    : newTaskList.push(e)
+                : e.completed !== false
+                ? newTaskList.unshift(e)
+                : newTaskList.push(e);
+        });
+        setTasks(newTaskList);
+    };
 
     return (
         <div className="container-fluid">
@@ -50,6 +72,7 @@ function App() {
                 tasks={tasks}
                 editTask={editTask}
                 deleteTask={deleteTask}
+                filterTaskList={filterTaskList}
             />
         </div>
     );
