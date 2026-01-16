@@ -14,20 +14,21 @@ function App() {
     const [tasks, setTasks] = useState<ITask[]>([]);
     const [error, setError] = useState("");
 
-    useEffect(
-        () => {
-        return()=>{fetch("https://jsonplaceholder.typicode.com/todos")
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error("Error with fetch data");
-                }
-                return res.json();
-            })
-            .then((tasks) => {
-                setTasks(tasks || []);
-            })
-            .catch((error) => setError(error))}}, []
-    );
+    useEffect(() => {
+        return () => {
+            fetch("https://jsonplaceholder.typicode.com/todos")
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error("Error with fetch data");
+                    }
+                    return res.json();
+                })
+                .then((tasks) => {
+                    setTasks(tasks || []);
+                })
+                .catch((error) => setError(error));
+        };
+    }, []);
 
     return (
         <div className="container-fluid">
@@ -45,6 +46,12 @@ function App() {
                         )
                     )
                 }
+                deleteTask={(removeTask: ITask) => {
+                    const index = tasks.findIndex((e) => e.id == removeTask.id);
+                    const tasksCopy = [...tasks];
+                    tasksCopy.splice(index, 1);
+                    setTasks(tasksCopy);
+                }}
             />
         </div>
     );
