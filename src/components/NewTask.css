@@ -1,0 +1,9 @@
+.new-task-form {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
