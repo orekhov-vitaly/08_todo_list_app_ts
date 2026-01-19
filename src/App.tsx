@@ -4,8 +4,8 @@ import NewTask from "./components/newTask/NewTask";
 import TaskList from "./components/taskList/TaskList";
 
 export interface ITask {
-    userId: number;
     id: string;
+    userId: number;
     title: string;
     completed: boolean;
 }
@@ -16,61 +16,74 @@ export interface IUser {
     username: string;
 }
 
+export interface ITaskWithUser extends ITask {
+    name: string;
+    username: string;
+}
+
+const TASKS_STORAGE_KEY = "tasks";
+const USERS_STORAGE_KEY = "users";
+const LAST_USER_ID_KEY = "last_user_id";
+
 function App() {
-    const TASKS_STORAGE_KEY = "todos_app_tasks";
-    const USERS_STORAGE_KEY = "todos_app_users";
-    const [tasks, setTasks] = useState<ITask[]>(
-        () => JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!) || []
-    );
-    const [users, setUsers] = useState<IUser[] | undefined>(
-        () => JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)!) || []
-    );
+    // const [tasks, setTasks] = useState<ITask[]>(
+    //     () => JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!) || []
+    // );
+    // const [lastTaskId, setLastTaskId] = useState<number>();
+    // const [users, setUsers] = useState<IUser[] | undefined>(
+    //     () => JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)!) || []
+    // );
+    // const [error, setError] = useState("");
+
+    const [tasks, setTasks] = useState<ITask[]>([]);
+    const [lastTaskId, setLastTaskId] = useState<number>();
+    const [users, setUsers] = useState<IUser[] | undefined>([]);
+    const [loadin, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        if (!localStorage.getItem(TASKS_STORAGE_KEY)) {
-            fetch("https://jsonplaceholder.typicode.com/todos")
-                .then((res) => {
-                    if (!res.ok) {
-                        throw new Error("Error with fetch data");
-                    }
-                    return res.json();
-                })
-                .then((tasks) => {
-                    // setTasks(tasks.slice(0, 10) || []);
-                    setTasks(tasks || []);
-                })
-                .catch((error) => setError(error));
-        } else {
-            setTasks(JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!));
+        const storedTasks = localStorage.getItem(TASKS_STORAGE_KEY);
+        const storedUsers = localStorage.getItem(USERS_STORAGE_KEY);
+
+        if (storedTasks && storedUsers) {
+            setTasks(JSON.parse(storedTasks));
+            setUsers(JSON.parse(storedUsers));
+            setLoading(false);
+            return;
         }
 
-        if (!localStorage.getItem(USERS_STORAGE_KEY)) {
-            fetch("https://jsonplaceholder.typicode.com/users")
-                .then((res) => {
-                    if (!res.ok) {
-                        throw new Error("Error with fetch data");
-                    }
-                    return res.json();
-                })
-                .then((users) => {
-                    setUsers(users || []);
-                })
-                .catch((error) => setError(error));
-        } else {
-            setUsers(JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)!));
-        }
+        Promise.all([
+            fetch("https://jsonplaceholder.typicode.com/todos").then((res) =>
+                res.json(),
+            ),
+            fetch("https://jsonplaceholder.typicode.com/users").then((res) =>
+                res.json(),
+            ),
+        ]).then(([tasksData, usersData]) => {
+            setTasks(tasksData);
+            setUsers(usersData);
+
+            localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasksData));
+            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(usersData));
+        })
+        .catch(error => setError(error))
+        .finally(() => setLoading(false));
     }, []);
 
-    useEffect(() => {
-        localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
-        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-    }, [tasks]);
+    const tasksWithUsers: ITaskWithUser[] = tasks.map(task => {
+        const user = users?.find(e => e.id === task.userId);
+
+        return {
+            ...task,
+            name: user ? user.name : "Unknown user",
+            username: user ? user.username : "Unknown username",
+        }
+    });
 
     const addTask = (newTask: ITask) => setTasks((prev) => [newTask, ...prev]);
     const editTask = (newTask: ITask) => {
         setTasks(
-            tasks.map((task) => (newTask.id === task.id ? newTask : task))
+            tasks.map((task) => (newTask.id === task.id ? newTask : task)),
         );
     };
     const deleteTask = (removeTask: ITask) => {
@@ -87,8 +100,8 @@ function App() {
                     ? newTaskList.unshift(e)
                     : newTaskList.push(e)
                 : e.completed !== false
-                ? newTaskList.unshift(e)
-                : newTaskList.push(e);
+                  ? newTaskList.unshift(e)
+                  : newTaskList.push(e);
         });
         setTasks(newTaskList);
     };
@@ -97,8 +110,7 @@ function App() {
         <div className="container-fluid">
             <NewTask addTask={addTask} />
             <TaskList
-                tasks={tasks}
-                users={users}
+                tasks={tasksWithUsers}
                 editTask={editTask}
                 deleteTask={deleteTask}
                 filterTaskList={filterTaskList}

@@ -1,13 +1,12 @@
 import { useState, type FC } from "react";
-import type { ITask, IUser } from "../../App";
+import type { ITaskWithUser } from "../../App";
 import "./Task.css";
 
 const Task: FC<{
-    task: ITask;
-    user: IUser | undefined;
-    editTask: (newTask: ITask) => void;
-    deleteTask: (newTask: ITask) => void;
-}> = ({ task, user, editTask, deleteTask }) => {
+    task: ITaskWithUser;
+    editTask: (newTask: ITaskWithUser) => void;
+    deleteTask: (newTask: ITaskWithUser) => void;
+}> = ({ task, editTask, deleteTask }) => {
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [newTaskTitle, setNewTaskTitle] = useState(task.title);
 
@@ -41,7 +40,7 @@ const Task: FC<{
             {!isEdit ? (
                 <div className="row">
                     <div className="col">
-                        <p>User: {user!==undefined && user.name}</p>
+                        <p className="user-name">User: {task.name} ({task.username})</p>
                         <h5
                             className="task-title m-0"
                             onClick={() => setIsEdit(!isEdit)}
@@ -69,6 +68,7 @@ const Task: FC<{
             ) : (
                 <div className="row">
                     <div className="col">
+                        <p className="user-name">User: {task.name} ({task.username})</p>
                         <div className="input-group">
                             <input
                                 type="text"
