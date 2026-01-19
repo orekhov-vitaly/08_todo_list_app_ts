@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-import type { ITaskWithUser } from "../../App";
+import { type ITaskWithUser } from '../../types';
 import "./Task.css";
 
 const Task: FC<{

@@ -1,25 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import { type ITask, type IUser, type ITaskWithUser } from './types';
 import NewTask from "./components/newTask/NewTask";
 import TaskList from "./components/taskList/TaskList";
-
-export interface ITask {
-    id: string;
-    userId: number;
-    title: string;
-    completed: boolean;
-}
-
-export interface IUser {
-    id: number;
-    name: string;
-    username: string;
-}
-
-export interface ITaskWithUser extends ITask {
-    name: string;
-    username: string;
-}
 
 const TASKS_STORAGE_KEY = "tasks";
 const USERS_STORAGE_KEY = "users";
@@ -37,7 +20,7 @@ function App() {
 
     const [tasks, setTasks] = useState<ITask[]>([]);
     const [lastTaskId, setLastTaskId] = useState<number>();
-    const [users, setUsers] = useState<IUser[] | undefined>([]);
+    const [users, setUsers] = useState<IUser[]>([]);
     const [loadin, setLoading] = useState(true);
     const [error, setError] = useState("");
 

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { ITaskWithUser } from "../../App";
+import { type ITaskWithUser } from '../../types';
 import Task from "../task/Task";
 import "./TaskList.css";
 import { v4 } from "uuid";
