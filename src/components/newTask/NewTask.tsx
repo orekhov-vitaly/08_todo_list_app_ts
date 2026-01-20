@@ -17,6 +17,7 @@ const NewTask: FC<IProps> = ({ addTask }) => {
             completed: false,
             title: inputNewTask.current!.value,
             userId: +inputUserId.current!.value,
+            createDate: new Date(),
         });
         inputNewTask.current!.value = inputUserId.current!.value = "";
     };

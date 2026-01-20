@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-import { type ITaskWithUser } from '../../types';
+import { type ITaskWithUser } from "../../types";
 import "./Task.css";
 
 const Task: FC<{
@@ -28,7 +28,18 @@ const Task: FC<{
         setIsEdit(!isEdit);
         setNewTaskTitle(task.title);
     };
-    
+
+    const date: string =
+        ("0" + new Date(task.createDate).getDate()).slice(-2) +
+        "." +
+        ("0" + (new Date(task.createDate).getMonth() + 1)).slice(-2) +
+        "." +
+        new Date(task.createDate).getFullYear() +
+        " " +
+        ("0" + (new Date(task.createDate).getHours() + 1)).slice(-2) +
+        ":" +
+        ("0" + (new Date(task.createDate).getMinutes() + 1)).slice(-2);
+
     return (
         <div
             className={
@@ -40,7 +51,12 @@ const Task: FC<{
             {!isEdit ? (
                 <div className="row">
                     <div className="col">
-                        <p className="user-name">User: {task.name} ({task.username})</p>
+                        <div className="task-info">
+                            <p className="user-name">
+                                User: {task.name} ({task.username})
+                            </p>
+                            <p className="date">{date}</p>
+                        </div>
                         <h5
                             className="task-title m-0"
                             onClick={() => setIsEdit(!isEdit)}
@@ -68,7 +84,9 @@ const Task: FC<{
             ) : (
                 <div className="row">
                     <div className="col">
-                        <p className="user-name">User: {task.name} ({task.username})</p>
+                        <p className="user-name">
+                            User: {task.name} ({task.username})
+                        </p>
                         <div className="input-group">
                             <input
                                 type="text"

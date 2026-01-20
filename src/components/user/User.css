@@ -1,21 +1,22 @@
-.task-item {
+.user-item {
     width: 100%;
     margin-bottom: 20px;
     padding: 10px;
-    border: 1px solid #dee2e6;
+    border: 1px solid #84bbf1;
+    background-color: #e5eaf0;
     border-radius: 6px;
     transition: all .4s;
 }
 
-.task-active {
+.user-active {
     background-color: #dbeed3;
 }
 
-.task-completed {
+.user-completed {
     background-color: #dfdfdf;
 }
 
-.task-info {
+.user-info {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -27,12 +28,12 @@
     color: #777;
 }
 
-.task-title {
+.user-title {
     position: relative;
     cursor: pointer;
 }
 
-.task-completed .task-title {
+.user-completed .user-title {
     text-decoration: line-through;
     color: rgba(33, 37, 41, .4);
 }
@@ -42,6 +43,6 @@
     transition: all .3s;
 }
 
-.task-item:hover .actions {
+.user-item:hover .actions {
     opacity: 1;
 }
