@@ -12,17 +12,40 @@ import TaskList from "./components/taskList/TaskList";
 import { NavLink, Route, Routes } from "react-router-dom";
 import UserList from "./components/userList/UserList";
 import NewUser from "./components/newUser/NewUser";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "./redux/store";
+import {
+    createTask,
+    deleteTask,
+    editTask,
+    fetchTask,
+} from "./redux/taskAction";
+import {
+    createUser,
+    deleteUser,
+    editUser,
+    fetchUser,
+} from "./redux/userAction";
 
 const TASKS_STORAGE_KEY = "tasks";
 const USERS_STORAGE_KEY = "users";
 
 function App() {
-    const [tasks, setTasks] = useState<ITask[]>(
-        () => JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!) || [],
+    // const [tasks, setTasks] = useState<ITask[]>(
+    //     () => JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!) || [],
+    // );
+    const dispatch = useDispatch<AppDispatch>();
+    const tasks: ITask[] = useSelector(
+        (state: RootState) => state.taskManager!.tasks,
     );
-    const [users, setUsers] = useState<IUser[]>(
-        () => JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)!) || [],
+
+    // const [users, setUsers] = useState<IUser[]>(
+    //     () => JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)!) || [],
+    // );
+    const users: IUser[] = useSelector(
+        (state: RootState) => state.userManager!.users,
     );
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [sortTypeTask, setSortTypeTask] = useState<SortTypeTask>("default");
@@ -33,8 +56,8 @@ function App() {
         const storedUsers = localStorage.getItem(USERS_STORAGE_KEY);
 
         if (storedTasks && storedUsers) {
-            setTasks(JSON.parse(storedTasks));
-            setUsers(JSON.parse(storedUsers));
+            dispatch(fetchTask(JSON.parse(storedTasks)));
+            dispatch(fetchUser(JSON.parse(storedUsers)));
             setLoading(false);
             return;
         }
@@ -48,18 +71,17 @@ function App() {
             ),
         ])
             .then(([tasksData, usersData]) => {
-                setTasks(
-                    tasksData.map((e: { createDate: Date }) => ({
-                        ...e,
-                        createDate: new Date("01.01.2026 00:00"),
-                    })),
+                dispatch(
+                    fetchTask(
+                        tasksData.map((e: { createDate: Date }) => ({
+                            ...e,
+                            createDate: new Date("01.01.2026 00:00"),
+                        })),
+                    ),
                 );
-                setUsers(usersData);
+                dispatch(fetchUser(usersData));
 
-                localStorage.setItem(
-                    TASKS_STORAGE_KEY,
-                    JSON.stringify(tasksData),
-                );
+                localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
                 localStorage.setItem(
                     USERS_STORAGE_KEY,
                     JSON.stringify(usersData),
@@ -67,27 +89,29 @@ function App() {
             })
             .catch((error) => setError(error))
             .finally(() => setLoading(false));
-    }, []);
+    }, [dispatch]);
 
     // синхронизация задач
     useEffect(() => {
         localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
-    }, [tasks]);
+    }, [dispatch, tasks]);
 
-    // синхронизация пользователей (если они меняются)
+    // // синхронизация пользователей (если они меняются)
     useEffect(() => {
         localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-    }, [users]);
+    }, [dispatch, users]);
 
-    const tasksWithUsers: ITaskWithUser[] = tasks.map((task) => {
-        const user = users?.find((e) => e.id === task.userId);
+    const tasksWithUsers: ITaskWithUser[] = useMemo(() => {
+        return tasks.map((task) => {
+            const user = users?.find((e) => e.id === task.userId);
 
-        return {
-            ...task,
-            name: user ? user.name : "Unknown user",
-            username: user ? user.username : "Unknown username",
-        };
-    });
+            return {
+                ...task,
+                name: user ? user.name : "Unknown user",
+                username: user ? user.username : "Unknown username",
+            };
+        });
+    }, [tasks]);
 
     const sortedTasks = useMemo(() => {
         const tasksCopy = [...tasksWithUsers];
@@ -98,14 +122,23 @@ function App() {
                 return tasksCopy.sort((b, a) => +a.completed - +b.completed);
             case "created-asc":
                 return tasksCopy.sort((a, b) => {
-                    if (new Date(a.createDate).getTime() - new Date(b.createDate).getTime() === 0) {
+                    if (
+                        new Date(a.createDate).getTime() -
+                            new Date(b.createDate).getTime() ===
+                        0
+                    ) {
                         return +a.completed - +b.completed;
                     }
-                    return new Date(a.createDate).getTime() - new Date(b.createDate).getTime();
+                    return (
+                        new Date(a.createDate).getTime() -
+                        new Date(b.createDate).getTime()
+                    );
                 });
             case "created-desc":
                 return tasksCopy.sort(
-                    (b, a) => new Date(a.createDate).getTime() - new Date(b.createDate).getTime(),
+                    (b, a) =>
+                        new Date(a.createDate).getTime() -
+                        new Date(b.createDate).getTime(),
                 );
             default:
                 return tasksCopy;
@@ -116,9 +149,9 @@ function App() {
         const usersCopy = [...users];
         switch (sortTypeUser) {
             case "name asc":
-                return usersCopy.sort((a, b) => a.name.localeCompare(b.name))
+                return usersCopy.sort((a, b) => a.name.localeCompare(b.name));
             case "name desc":
-                return usersCopy.sort((b, a) => a.name.localeCompare(b.name))
+                return usersCopy.sort((b, a) => a.name.localeCompare(b.name));
             default:
                 return usersCopy;
         }
@@ -127,28 +160,26 @@ function App() {
     const addTask = (newTask: ITask) => {
         setLoading(true);
         try {
-            setTasks((prev) => [newTask, ...prev]);
+            dispatch(createTask(newTask));
         } finally {
             setLoading(false);
         }
     };
-    const editTask = (newTask: ITask) => {
+    const editTask1 = (newTask: ITask) => {
         setLoading(true);
         try {
-            setTasks(
-                tasks.map((task) => (newTask.id === task.id ? newTask : task)),
-            );
+            dispatch(editTask(newTask));
         } finally {
             setLoading(false);
         }
     };
-    const deleteTask = (removeTask: ITask) => {
+    const deleteTask1 = (removeTask: ITask) => {
         setLoading(true);
         try {
             const index = tasks.findIndex((e) => e.id == removeTask.id);
             const tasksCopy = [...tasks];
             tasksCopy.splice(index, 1);
-            setTasks(tasksCopy);
+            dispatch(deleteTask(removeTask.id));
         } finally {
             setLoading(false);
         }
@@ -157,28 +188,24 @@ function App() {
     const addUser = (newUser: IUser) => {
         setLoading(true);
         try {
-            setUsers((prev) => [newUser, ...prev]);
+            // setUsers((prev) => [newUser, ...prev]);
+            dispatch(createUser(newUser));
         } finally {
             setLoading(false);
         }
     };
-    const editUser = (newUser: IUser) => {
+    const editUser1 = (newUser: IUser) => {
         setLoading(true);
         try {
-            setUsers(
-                users.map((user) => (newUser.id === user.id ? newUser : user)),
-            );
+            dispatch(editUser(newUser));
         } finally {
             setLoading(false);
         }
     };
-    const deleteUser = (removeUser: IUser) => {
+    const deleteUser1 = (removeUser: IUser) => {
         setLoading(true);
         try {
-            const index = users.findIndex((e) => e.id == removeUser.id);
-            const usersCopy = [...users];
-            usersCopy.splice(index, 1);
-            setUsers(usersCopy);
+            dispatch(deleteUser(removeUser.id));
         } finally {
             setLoading(false);
         }
@@ -187,8 +214,12 @@ function App() {
     return (
         <div className="container-fluid">
             <div className="input-group mt-3">
-                <NavLink to="/task_manager" className="btn btn-outline-primary">Task Manager</NavLink>
-                <NavLink to="/phone_book" className="btn btn-outline-primary">Phone Book</NavLink>
+                <NavLink to="/task_manager" className="btn btn-outline-primary">
+                    Task Manager
+                </NavLink>
+                <NavLink to="/phone_book" className="btn btn-outline-primary">
+                    Phone Book
+                </NavLink>
             </div>
 
             <Routes>
@@ -199,8 +230,8 @@ function App() {
                             <NewTask addTask={addTask} />
                             <TaskList
                                 tasks={tasksWithUsers}
-                                editTask={editTask}
-                                deleteTask={deleteTask}
+                                editTask={editTask1}
+                                deleteTask={deleteTask1}
                                 loading={loading}
                                 sortedTasks={sortedTasks}
                                 setSortTypeTask={setSortTypeTask}
@@ -209,20 +240,23 @@ function App() {
                         </>
                     }
                 />
-                <Route path="/phone_book" element={
+                <Route
+                    path="/phone_book"
+                    element={
                         <>
                             <NewUser addUser={addUser} />
                             <UserList
                                 users={users}
-                                editUser={editUser}
-                                deleteUser={deleteUser}
+                                editUser={editUser1}
+                                deleteUser={deleteUser1}
                                 loading={loading}
                                 sortedUsers={sortedUsers}
                                 setSortTypeUser={setSortTypeUser}
                                 sortTypeUser={sortTypeUser}
                             />
                         </>
-                    } />
+                    }
+                />
             </Routes>
         </div>
     );
