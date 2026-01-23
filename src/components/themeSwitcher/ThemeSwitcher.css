@@ -1,0 +1,67 @@
+.theme-switcher {
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
+}
+
+.theme-switcher .form-switch {
+    padding-left: 2.9rem;
+    min-height: 1rem;
+    height: 1rem;
+}
+
+.theme-switcher .form-switch .form-check-input {
+    margin-top: 0;
+    cursor: pointer;
+}
+
+body.dark {
+    background-color: #191b23;
+    color: #8bafdb;
+}
+
+body.dark .new-task-form {
+    border-color: rgb(79, 79, 143);
+}
+
+body.dark .theme-switcher {
+    color: rgb(83, 83, 215);
+}
+
+body.dark .theme-switcher .form-check-input {
+    background-color: rgb(83, 83, 215);
+    border-color: rgb(50, 50, 186);
+}
+
+body.dark .user-item {
+    border-color: #396ea3;
+    background-color: #224877;
+}
+
+body.dark .task-list-form,
+body.dark .user-list-form {
+    border-color: rgb(79, 79, 143);
+}
+
+body.dark .task-item.task-active {
+    background-color: #485b40;
+}
+
+body.dark .task-item.task-completed {
+    background-color: #515151;
+}
+
+body.dark .task-item {
+    border-color: #7c8085;
+}
+
+body.dark .task-item .user-name {
+    color: #777;
+}
+
+body.dark .form-control,
+body.dark .form-select {
+    background-color: #262b37;
+    border-color: rgb(79, 79, 143);
+    color: #8bafdb;
+}

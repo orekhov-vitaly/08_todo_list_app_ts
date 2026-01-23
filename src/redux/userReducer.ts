@@ -1,7 +1,7 @@
 import type { IUser } from "../types";
 import type { IAction } from "./userAction";
 
-interface IState {
+interface IUserState {
     users: IUser[];
 }
 
@@ -20,7 +20,7 @@ function loadFromLocalStorage() {
         return [];
     }
 }
-const initialState: IState = {
+const initialState: IUserState = {
     users: loadFromLocalStorage(),
 };
 
@@ -31,16 +31,14 @@ export default function userReducer(state = initialState, action: IAction) {
         case "EDIT_USER":
             return {
                 ...state,
-                users: [
-                    ...state.users.map((e) =>
-                        e.id === action.payload.id ? action.payload : e,
-                    ),
-                ],
+                users: state.users.map((e) =>
+                    e.id === action.payload.id ? action.payload : e,
+                ),
             };
         case "DELETE_USER":
             return {
                 ...state,
-                users: [...state.users.filter((e) => e.id !== action.payload)],
+                users: state.users.filter((e) => e.id !== action.payload),
             };
         case "FETCH_USER":
             return {

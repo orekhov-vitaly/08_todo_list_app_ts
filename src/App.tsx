@@ -6,6 +6,7 @@ import {
     type ITaskWithUser,
     type SortTypeTask,
     type SortTypeUser,
+    type Theme,
 } from "./types";
 import NewTask from "./components/newTask/NewTask";
 import TaskList from "./components/taskList/TaskList";
@@ -26,15 +27,18 @@ import {
     editUser,
     fetchUser,
 } from "./redux/userAction";
+import ThemeSwitcher from "./components/themeSwitcher/ThemeSwitcher";
+
 
 const TASKS_STORAGE_KEY = "tasks";
 const USERS_STORAGE_KEY = "users";
 
 function App() {
+    const dispatch = useDispatch<AppDispatch>();
+    
     // const [tasks, setTasks] = useState<ITask[]>(
     //     () => JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!) || [],
     // );
-    const dispatch = useDispatch<AppDispatch>();
     const tasks: ITask[] = useSelector(
         (state: RootState) => state.taskManager!.tasks,
     );
@@ -111,15 +115,15 @@ function App() {
                 username: user ? user.username : "Unknown username",
             };
         });
-    }, [tasks]);
+    }, [tasks, users]);
 
     const sortedTasks = useMemo(() => {
         const tasksCopy = [...tasksWithUsers];
         switch (sortTypeTask) {
             case "completed":
-                return tasksCopy.sort((a, b) => +a.completed - +b.completed);
-            case "not-completed":
                 return tasksCopy.sort((b, a) => +a.completed - +b.completed);
+            case "not-completed":
+                return tasksCopy.sort((a, b) => +a.completed - +b.completed);
             case "created-asc":
                 return tasksCopy.sort((a, b) => {
                     if (
@@ -143,7 +147,7 @@ function App() {
             default:
                 return tasksCopy;
         }
-    }, [tasks, sortTypeTask]);
+    }, [tasksWithUsers, sortTypeTask]);
 
     const sortedUsers = useMemo(() => {
         const usersCopy = [...users];
@@ -213,13 +217,22 @@ function App() {
 
     return (
         <div className="container-fluid">
-            <div className="input-group mt-3">
-                <NavLink to="/task_manager" className="btn btn-outline-primary">
-                    Task Manager
-                </NavLink>
-                <NavLink to="/phone_book" className="btn btn-outline-primary">
-                    Phone Book
-                </NavLink>
+            <div className="header">
+                <div className="input-group">
+                    <NavLink
+                        to="/task_manager"
+                        className="btn btn-outline-primary"
+                    >
+                        Task Manager
+                    </NavLink>
+                    <NavLink
+                        to="/phone_book"
+                        className="btn btn-outline-primary"
+                    >
+                        Phone Book
+                    </NavLink>
+                </div>
+                <ThemeSwitcher />
             </div>
 
             <Routes>

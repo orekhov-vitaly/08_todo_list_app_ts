@@ -29,26 +29,35 @@ const TaskList: FC<IProps> = ({
     return (
         <div className="task-list-form">
             {loading && <Loader />}
-            <select
-                id="sortSelect"
-                className="form-select mb-3"
-                value={sortTypeTask}
-                onChange={(e) => setSortTypeTask(e.target.value as SortTypeTask)}
-            >
-                <option value="">Выберите сортировку</option>
-                <option value="completed">Выполнено/не выполнено</option>
-                <option value="not-completed">Не выполнено/выполнено</option>
-                <option value="created-asc">
-                    По дате создания (в хронологическом порядке)
-                </option>
-                <option value="created-desc">
-                    По дате создания (в порядке, обратном хронологическому)
-                </option>
-            </select>
+            <div className="row mb-3">
+                <label className="col-md-auto col-form-label">
+                    Сортировать
+                </label>
+                <div className="col-md">
+                    <select
+                        id="sortSelect"
+                        className="form-select"
+                        value={sortTypeTask}
+                        onChange={(e) =>
+                            setSortTypeTask(e.target.value as SortTypeTask)
+                        }
+                    >
+                        <option value="">по умолчанию</option>
+                        <option value="completed">сначала выполненные</option>
+                        <option value="not-completed">
+                            сначала не выполненные
+                        </option>
+                        <option value="created-asc">
+                            в хронологическом порядке
+                        </option>
+                        <option value="created-desc">
+                            в обратном хронологическом порядке
+                        </option>
+                    </select>
+                </div>
+            </div>
             {taskList.length ? (
-                <>
-                    {taskList}
-                </>
+                <>{taskList}</>
             ) : (
                 <h3 className="text-center">"List tasks is empty"</h3>
             )}

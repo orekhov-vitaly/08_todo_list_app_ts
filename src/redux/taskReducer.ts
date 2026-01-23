@@ -1,7 +1,7 @@
 import type { ITask } from "../types";
 import type { IAction } from "./taskAction";
 
-interface IState {
+interface ITaskState {
     tasks: ITask[];
 }
 
@@ -20,7 +20,7 @@ function loadFromLocalStorage() {
         return [];
     }
 }
-const initialState: IState = {
+const initialState: ITaskState = {
     tasks: loadFromLocalStorage(),
 };
 
@@ -31,16 +31,14 @@ export default function taskReducer(state = initialState, action: IAction) {
         case "EDIT_TASK":
             return {
                 ...state,
-                tasks: [
-                    ...state.tasks.map((e) =>
-                        e.id === action.payload.id ? action.payload : e,
-                    ),
-                ],
+                tasks: state.tasks.map((e) =>
+                    e.id === action.payload.id ? action.payload : e,
+                ),
             };
         case "DELETE_TASK":
             return {
                 ...state,
-                tasks: [...state.tasks.filter((e) => e.id !== action.payload)],
+                tasks: state.tasks.filter((e) => e.id !== action.payload),
             };
         case "FETCH_TASK":
             return {

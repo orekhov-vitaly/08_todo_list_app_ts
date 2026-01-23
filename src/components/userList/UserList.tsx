@@ -29,20 +29,27 @@ const UserList: FC<IProps> = ({
     return (
         <div className="user-list-form">
             {loading && <Loader />}
-            <select
-                id="sortSelect"
-                className="form-select mb-3"
-                value={sortTypeUser}
-                onChange={(e) => setSortTypeUser(e.target.value as SortTypeUser)}
-            >
-                <option value="">Выберите сортировку</option>
-                <option value="name asc">A-Z</option>
-                <option value="name desc">Z-A</option>
-            </select>
+            <div className="row mb-3">
+                <label className="col-md-auto col-form-label">
+                    Сортировать
+                </label>
+                <div className="col-md">
+                    <select
+                        id="sortSelect"
+                        className="form-select mb-3"
+                        value={sortTypeUser}
+                        onChange={(e) =>
+                            setSortTypeUser(e.target.value as SortTypeUser)
+                        }
+                    >
+                        <option value="">по умолчанию</option>
+                        <option value="name asc">A-Z</option>
+                        <option value="name desc">Z-A</option>
+                    </select>
+                </div>
+            </div>
             {userList.length ? (
-                <>
-                    {userList}
-                </>
+                <>{userList}</>
             ) : (
                 <h3 className="text-center">"List users is empty"</h3>
             )}

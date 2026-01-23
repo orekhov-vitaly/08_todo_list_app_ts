@@ -19,6 +19,10 @@ export interface ITaskWithUser extends ITask {
     username: string;
 }
 
+export type Theme =
+    | "light"
+    | "dark";
+
 export type SortTypeTask =
     | "default"
     | "completed"
