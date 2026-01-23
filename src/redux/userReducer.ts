@@ -1,5 +1,5 @@
 import type { IUser } from "../types";
-import type { IAction } from "./userAction";
+import type { IUserAction } from "./userAction";
 
 interface IUserState {
     users: IUser[];
@@ -24,7 +24,7 @@ const initialState: IUserState = {
     users: loadFromLocalStorage(),
 };
 
-export default function userReducer(state = initialState, action: IAction) {
+export default function userReducer(state = initialState, action: IUserAction) {
     switch (action.type) {
         case "CREATE_USER":
             return { ...state, users: [action.payload, ...state.users] };

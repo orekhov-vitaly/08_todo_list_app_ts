@@ -1,5 +1,5 @@
 import type { Theme } from "../types";
-import type { IAction } from "./themeAction";
+import type { IThemeAction } from "./themeAction";
 
 interface IThemeState {
     theme: Theme;
@@ -21,7 +21,7 @@ const initialState: IThemeState = {
     theme: loadFromLocalStorage(),
 };
 
-export default function themeReducer(state = initialState, action: IAction) {
+export default function themeReducer(state = initialState, action: IThemeAction) {
     switch (action.type) {
         case "SET_THEME":
             return { ...state, theme: action.payload };

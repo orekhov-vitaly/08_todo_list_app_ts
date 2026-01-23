@@ -12,7 +12,7 @@ const THEME_STORAGE_KEY = "theme";
 const ThemeSwitcher = () => {
     const dispatch = useDispatch<AppDispatch>();
     const theme: Theme = useSelector(
-        (state: RootState) => state.themeManager!.theme,
+        (state: RootState) => state.themeToggle.theme,
     );
 
     useEffect(() => {
@@ -33,7 +33,6 @@ const ThemeSwitcher = () => {
                     <input
                         className="form-check-input"
                         type="checkbox"
-                        id="flexSwitchCheckDefault"
                         checked={theme === "light"}
                         onChange={toggleTheme}
                     />

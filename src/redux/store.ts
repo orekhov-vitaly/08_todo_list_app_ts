@@ -6,7 +6,7 @@ import themeReduer from "./themeReducer";
 export const store = legacy_createStore(combineReducers({
     taskManager: taskReducer,
     userManager: userReducer,
-    themeManager: themeReduer,
+    themeToggle: themeReduer,
 }))
 
 export type RootState = ReturnType<typeof store.getState>;

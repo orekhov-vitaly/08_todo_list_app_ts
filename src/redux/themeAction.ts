@@ -2,9 +2,9 @@ import type { Theme } from "../types";
 
 export const SET_THEME = "SET_THEME";
 
-export const setTheme = (theme: Theme): IAction => ({
+export const setTheme = (newTheme: Theme): IThemeAction => ({
     type: SET_THEME,
-    payload: theme,
+    payload: newTheme,
 });
 
-export type IAction = { type: typeof SET_THEME; payload: Theme };
+export type IThemeAction = { type: "SET_THEME"; payload: Theme };

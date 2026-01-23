@@ -1,5 +1,5 @@
 import type { ITask } from "../types";
-import type { IAction } from "./taskAction";
+import type { ITaskAction } from "./taskAction";
 
 interface ITaskState {
     tasks: ITask[];
@@ -24,7 +24,7 @@ const initialState: ITaskState = {
     tasks: loadFromLocalStorage(),
 };
 
-export default function taskReducer(state = initialState, action: IAction) {
+export default function taskReducer(state = initialState, action: ITaskAction) {
     switch (action.type) {
         case "CREATE_TASK":
             return { ...state, tasks: [action.payload, ...state.tasks] };

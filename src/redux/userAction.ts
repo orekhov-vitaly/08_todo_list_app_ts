@@ -5,21 +5,21 @@ export const DELETE_USER = "DELETE_USER";
 export const CREATE_USER = "CREATE_USER";
 export const FETCH_USER = "FETCH_USER";
 
-export const createUser = (newUser: IUser): IAction => ({
+export const createUser = (newUser: IUser): IUserAction => ({
     type: CREATE_USER,
     payload: newUser,
 });
-export const editUser = (newUser: IUser): IAction => ({
+export const editUser = (newUser: IUser): IUserAction => ({
     type: EDIT_USER,
     payload: newUser,
 });
-export const deleteUser = (id: string): IAction => ({ type: DELETE_USER, payload: id });
-export const fetchUser = (userList: IUser[]): IAction => ({
+export const deleteUser = (id: string): IUserAction => ({ type: DELETE_USER, payload: id });
+export const fetchUser = (userList: IUser[]): IUserAction => ({
     type: FETCH_USER,
     payload: userList,
 });
 
-export type IAction =
+export type IUserAction =
     | { type: "CREATE_USER"; payload: IUser }
     | { type: "EDIT_USER"; payload: IUser }
     | { type: "DELETE_USER"; payload: string }
