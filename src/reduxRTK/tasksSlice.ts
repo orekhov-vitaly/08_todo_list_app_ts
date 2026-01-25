@@ -35,12 +35,12 @@ const tasksSlice = createSlice({
             state.tasks = action.payload;
         },
         editTaskAction(state, action: PayloadAction<ITask>) {
-            state.tasks.map((e) =>
+            state.tasks = state.tasks.map((e) =>
                 e.id === action.payload.id ? action.payload : e,
             );
         },
         deleteTaskAction(state, action: PayloadAction<string>) {
-            state.tasks.filter((e) => e.id !== action.payload);
+            state.tasks = state.tasks.filter((e) => e.id !== action.payload);
         },
     },
 });
