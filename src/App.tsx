@@ -6,7 +6,6 @@ import {
     type ITaskWithUser,
     type SortTypeTask,
     type SortTypeUser,
-    type Theme,
 } from "./types";
 import NewTask from "./components/newTask/NewTask";
 import TaskList from "./components/taskList/TaskList";
@@ -14,40 +13,59 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import UserList from "./components/userList/UserList";
 import NewUser from "./components/newUser/NewUser";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "./redux/store";
-import {
-    createTask,
-    deleteTask,
-    editTask,
-    fetchTask,
-} from "./redux/taskAction";
-import {
-    createUser,
-    deleteUser,
-    editUser,
-    fetchUser,
-} from "./redux/userAction";
+// import type { AppDispatch, RootState } from "./redux/store";
+// import {
+//     createTask,
+//     deleteTask,
+//     editTask,
+//     fetchTask,
+// } from "./redux/taskAction";
+// import {
+//     createUser,
+//     deleteUser,
+//     editUser,
+//     fetchUser,
+// } from "./redux/userAction";
 import ThemeSwitcher from "./components/themeSwitcher/ThemeSwitcher";
-
+import type { AppDispatchRTK, RootStateRTK } from "./reduxRTK/storeRTK";
+import {
+    addTaskAction,
+    deleteTaskAction,
+    editTaskAction,
+    getTaskListAction,
+} from "./reduxRTK/tasksSlice";
+import {
+    addUserAction,
+    deleteUserAction,
+    editUserAction,
+    getUserListAction,
+} from "./reduxRTK/usersSlice";
 
 const TASKS_STORAGE_KEY = "tasks";
 const USERS_STORAGE_KEY = "users";
 
 function App() {
-    const dispatch = useDispatch<AppDispatch>();
-    
+    // const dispatch: AppDispatch = useDispatch();
+    const dispatch: AppDispatchRTK = useDispatch();
+
     // const [tasks, setTasks] = useState<ITask[]>(
     //     () => JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)!) || [],
     // );
+    // const tasks: ITask[] = useSelector(
+    //     (state: RootState) => state.taskManager!.tasks,
+    // );
     const tasks: ITask[] = useSelector(
-        (state: RootState) => state.taskManager!.tasks,
+        (state: RootStateRTK) => state.tasksManager.tasks,
     );
 
     // const [users, setUsers] = useState<IUser[]>(
     //     () => JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)!) || [],
     // );
+    // const users: IUser[] = useSelector(
+    //     (state: RootState) => state.userManager!.users,
+    // );
     const users: IUser[] = useSelector(
-        (state: RootState) => state.userManager!.users,
+        (state: RootStateRTK) => state.usersManager.users,
     );
 
     const [loading, setLoading] = useState(true);
@@ -60,8 +78,8 @@ function App() {
         const storedUsers = localStorage.getItem(USERS_STORAGE_KEY);
 
         if (storedTasks && storedUsers) {
-            dispatch(fetchTask(JSON.parse(storedTasks)));
-            dispatch(fetchUser(JSON.parse(storedUsers)));
+            dispatch(getTaskListAction(JSON.parse(storedTasks)));
+            dispatch(getUserListAction(JSON.parse(storedUsers)));
             setLoading(false);
             return;
         }
@@ -76,14 +94,14 @@ function App() {
         ])
             .then(([tasksData, usersData]) => {
                 dispatch(
-                    fetchTask(
+                    getTaskListAction(
                         tasksData.map((e: { createDate: Date }) => ({
                             ...e,
                             createDate: new Date("01.01.2026 00:00"),
                         })),
                     ),
                 );
-                dispatch(fetchUser(usersData));
+                dispatch(getUserListAction(usersData));
 
                 localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
                 localStorage.setItem(
@@ -164,7 +182,7 @@ function App() {
     const addTask = (newTask: ITask) => {
         setLoading(true);
         try {
-            dispatch(createTask(newTask));
+            dispatch(addTaskAction(newTask));
         } finally {
             setLoading(false);
         }
@@ -172,7 +190,7 @@ function App() {
     const editTask1 = (newTask: ITask) => {
         setLoading(true);
         try {
-            dispatch(editTask(newTask));
+            dispatch(editTaskAction(newTask));
         } finally {
             setLoading(false);
         }
@@ -183,7 +201,7 @@ function App() {
             const index = tasks.findIndex((e) => e.id == removeTask.id);
             const tasksCopy = [...tasks];
             tasksCopy.splice(index, 1);
-            dispatch(deleteTask(removeTask.id));
+            dispatch(deleteTaskAction(removeTask.id));
         } finally {
             setLoading(false);
         }
@@ -193,7 +211,7 @@ function App() {
         setLoading(true);
         try {
             // setUsers((prev) => [newUser, ...prev]);
-            dispatch(createUser(newUser));
+            dispatch(addUserAction(newUser));
         } finally {
             setLoading(false);
         }
@@ -201,7 +219,7 @@ function App() {
     const editUser1 = (newUser: IUser) => {
         setLoading(true);
         try {
-            dispatch(editUser(newUser));
+            dispatch(editUserAction(newUser));
         } finally {
             setLoading(false);
         }
@@ -209,7 +227,7 @@ function App() {
     const deleteUser1 = (removeUser: IUser) => {
         setLoading(true);
         try {
-            dispatch(deleteUser(removeUser.id));
+            dispatch(deleteUserAction(removeUser.id));
         } finally {
             setLoading(false);
         }
